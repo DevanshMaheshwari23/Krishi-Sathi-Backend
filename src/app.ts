@@ -20,8 +20,6 @@ app.use(cors({
   maxAge: 600 // Cache preflight for 10 minutes
 }));
 
-// Handle preflight requests
-app.options('*', cors());
 
 // Other middleware
 app.use(helmet({
