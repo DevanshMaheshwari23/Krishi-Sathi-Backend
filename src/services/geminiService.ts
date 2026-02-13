@@ -36,7 +36,7 @@ export class GeminiService {
 
   constructor() {
     this.model = genAI.getGenerativeModel({ 
-      model: 'Gemini 2.5 Pro',
+      model: 'gemini-2.5-pro',
       systemInstruction: SYSTEM_INSTRUCTION
     });
   }
