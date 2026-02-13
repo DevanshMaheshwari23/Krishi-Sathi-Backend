@@ -59,11 +59,11 @@ export const chat = async (req: AuthRequest, res: Response) => {
       response: aiResponse,
       conversationId: conversation?._id
     });
-  } catch (error) {
-    console.error('Chat error:', error instanceof Error ? error.message : 'Unknown error');
+  } catch (error: any) {
+    console.error('Chat error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to process chat message'
+      message: error.message || 'Failed to process chat message'
     });
   }
 };
@@ -79,16 +79,6 @@ export const textToSpeech = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Check if ElevenLabs is configured
-    if (!process.env.ELEVENLABS_API_KEY) {
-      console.warn('ElevenLabs API key not configured');
-      return res.status(503).json({
-        success: false,
-        message: 'Text-to-speech service not configured',
-        code: 'SERVICE_NOT_CONFIGURED'
-      });
-    }
-
     // Generate speech
     const audioBuffer = await elevenLabsService.textToSpeech(text, language);
 
@@ -96,34 +86,15 @@ export const textToSpeech = async (req: AuthRequest, res: Response) => {
     res.set({
       'Content-Type': 'audio/mpeg',
       'Content-Length': audioBuffer.length.toString(),
-      'Content-Disposition': 'inline; filename="speech.mp3"',
-      'Cache-Control': 'no-cache'
+      'Content-Disposition': 'inline; filename="speech.mp3"'
     });
 
     return res.send(audioBuffer);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Text-to-speech error:', errorMessage);
-    
-    // Send appropriate status code based on error
-    let statusCode = 503;
-    let userMessage = 'Text-to-speech service temporarily unavailable';
-    
-    if (errorMessage.includes('authentication')) {
-      statusCode = 401;
-      userMessage = 'Voice service authentication failed';
-    } else if (errorMessage.includes('rate limit')) {
-      statusCode = 429;
-      userMessage = 'Voice service rate limit exceeded';
-    } else if (errorMessage.includes('quota')) {
-      statusCode = 402;
-      userMessage = 'Voice service quota exceeded';
-    }
-    
-    return res.status(statusCode).json({
+  } catch (error: any) {
+    console.error('Text-to-speech error:', error);
+    return res.status(500).json({
       success: false,
-      message: userMessage,
-      code: 'TTS_ERROR'
+      message: error.message || 'Failed to generate speech'
     });
   }
 };
@@ -139,31 +110,20 @@ export const streamSpeech = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Check if ElevenLabs is configured
-    if (!process.env.ELEVENLABS_API_KEY) {
-      return res.status(503).json({
-        success: false,
-        message: 'Speech streaming service not configured'
-      });
-    }
-
     // Stream audio
     const audioStream = await elevenLabsService.streamTextToSpeech(text);
 
     res.set({
       'Content-Type': 'audio/mpeg',
-      'Transfer-Encoding': 'chunked',
-      'Cache-Control': 'no-cache'
+      'Transfer-Encoding': 'chunked'
     });
 
     audioStream.pipe(res);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Speech streaming error:', errorMessage);
-    
-    return res.status(503).json({
+  } catch (error: any) {
+    console.error('Speech streaming error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Failed to stream speech'
+      message: error.message || 'Failed to stream speech'
     });
   }
 };
@@ -185,11 +145,11 @@ export const getCropAdvice = async (req: AuthRequest, res: Response) => {
       success: true,
       advice
     });
-  } catch (error) {
-    console.error('Crop advice error:', error instanceof Error ? error.message : 'Unknown error');
+  } catch (error: any) {
+    console.error('Crop advice error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to get crop advice'
+      message: error.message || 'Failed to get crop advice'
     });
   }
 };
@@ -211,11 +171,11 @@ export const analyzePest = async (req: AuthRequest, res: Response) => {
       success: true,
       analysis
     });
-  } catch (error) {
-    console.error('Pest analysis error:', error instanceof Error ? error.message : 'Unknown error');
+  } catch (error: any) {
+    console.error('Pest analysis error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to analyze pest issue'
+      message: error.message || 'Failed to analyze pest issue'
     });
   }
 };
@@ -255,7 +215,7 @@ export const getConversationHistory = async (req: AuthRequest, res: Response) =>
       }
     });
   } catch (error) {
-    console.error('Get history error:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Get history error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to get conversation history'
@@ -311,7 +271,7 @@ export const getUserConversations = async (req: AuthRequest, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Get conversations error:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Get conversations error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to get conversations'
@@ -348,7 +308,7 @@ export const deleteConversation = async (req: AuthRequest, res: Response) => {
       message: 'Conversation deleted successfully'
     });
   } catch (error) {
-    console.error('Delete conversation error:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Delete conversation error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to delete conversation'
