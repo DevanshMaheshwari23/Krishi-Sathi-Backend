@@ -4,7 +4,8 @@ import morgan from "morgan";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import listingRoutes from "./routes/listingRoutes";
-import chatRoutes from "./routes/chatRoutes"; // ← Add this
+import chatRoutes from "./routes/chatRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 const app = express();
 
@@ -53,8 +54,9 @@ app.get("/", (_req, res) => {
     endpoints: {
       auth: "/api/v1/auth",
       users: "/api/v1/users",
+      profile: "/api/v1/profile",
       listings: "/api/v1/listings",
-      chat: "/api/v1/chat" // ← Add this
+      chat: "/api/v1/chat"
     }
   });
 });
@@ -65,8 +67,9 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/listings", listingRoutes);
-app.use("/api/v1/chat", chatRoutes); // ← Add this
+app.use("/api/v1/chat", chatRoutes);
 
 // 404
 app.use((_req, res) => {
