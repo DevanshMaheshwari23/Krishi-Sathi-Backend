@@ -35,19 +35,32 @@ export class GeminiService {
   private model;
 
   constructor() {
+    // ✅ Removed systemInstruction - Gemma doesn't support it
     this.model = genAI.getGenerativeModel({ 
-      model: 'gemma-3-27b-it',
-      systemInstruction: SYSTEM_INSTRUCTION
+      model: 'gemma-3-27b-it'
     });
   }
 
   async chat(messages: ChatMessage[]): Promise<string> {
     try {
-      const chat = this.model.startChat({
-        history: messages.slice(0, -1).map(msg => ({
+      // ✅ Add system instruction as first conversation
+      const history = [
+        {
+          role: 'user' as const,
+          parts: [{ text: SYSTEM_INSTRUCTION }]
+        },
+        {
+          role: 'model' as const,
+          parts: [{ text: 'Namaste! 🙏 I am Sathi, your agricultural assistant. I understand my role and will help Indian farmers with accurate, practical farming advice in simple Hindi and English. How can I assist you today?' }]
+        },
+        ...messages.slice(0, -1).map(msg => ({
           role: msg.role,
           parts: [{ text: msg.parts }]
-        })),
+        }))
+      ];
+
+      const chat = this.model.startChat({
+        history,
         generationConfig: {
           temperature: 0.7,
           topK: 40,
