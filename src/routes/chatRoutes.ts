@@ -10,9 +10,9 @@ const router = express.Router();
 // POST /api/v1/chat/analyze-pest
 // POST /api/v1/chat/text-to-speech
 
-router.post('/chat', auth, chat);
-router.post('/crop-advice', auth, getCropAdvice);
-router.post('/analyze-pest', auth, analyzePest);
-router.post('/text-to-speech', auth, textToSpeech);
+router.post('/chat', authMiddleware, chat);
+router.post('/crop-advice', authMiddleware, getCropAdvice);
+router.post('/analyze-pest', authMiddleware, analyzePest);
+router.post('/text-to-speech', authMiddleware, textToSpeech);
 
 export default router;
