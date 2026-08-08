@@ -37,7 +37,7 @@ export class GeminiService {
   constructor() {
     // ✅ Removed systemInstruction - Gemma doesn't support it
     this.model = genAI.getGenerativeModel({ 
-      model: 'gemma-3-27b-it'
+      model: 'gemini-2.5-flash'
     });
   }
 
