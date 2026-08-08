@@ -1,6 +1,6 @@
 import express from 'express';
 import { chat, getCropAdvice, analyzePest, textToSpeech } from '../controllers/chatController';
-import { auth } from '../middleware/auth';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
